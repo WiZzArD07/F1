@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# FastF1 Cache (VERY IMPORTANT - DO NOT PUSH)
+cache/
+.fastf1-cache/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Data files (optional)
+*.csv
+*.parquet
+
+# Images generated
+track.png
