@@ -12,7 +12,7 @@ fastf1.Cache.enable_cache("cache")
 print("Loading session...")
 session = fastf1.get_session(2024, "Monaco", "R")
 session.load()
-print(" Session loaded!")
+print("✅ Session loaded!")
 
 # -------------------------------
 # Load Drivers
@@ -63,53 +63,98 @@ def normalize(x, y):
 # -------------------------------
 class F1Replay(arcade.Window):
     def __init__(self):
-        super().__init__(800, 800, "F1 Replay ")
+        super().__init__(900, 900, "F1 Replay System 🏎️")
         arcade.set_background_color(arcade.color.BLACK)
-        self.frame = 0
+
+        self.frame = 0.0
+        self.speed = 1.0
+        self.paused = False
 
     def on_draw(self):
         self.clear()
 
-        # Draw track
+        # -----------------------
+        # Draw Track
+        # -----------------------
         for i in range(len(X) - 1):
             dx = abs(X[i+1] - X[i])
             dy = abs(Y[i+1] - Y[i])
 
-            # Skip unrealistic jumps
             if dx > 1000 or dy > 1000:
-             continue
-            x1, y1 = normalize(X[i], Y[i])
-            x2, y2 = normalize(X[i + 1], Y[i + 1])
+                continue
 
+            x1, y1 = normalize(X[i], Y[i])
+            x2, y2 = normalize(X[i+1], Y[i+1])
             arcade.draw_line(x1, y1, x2, y2, arcade.color.WHITE, 2)
-        # Close the loop (important)
+
+        # close loop
         x1, y1 = normalize(X[-1], Y[-1])
         x2, y2 = normalize(X[0], Y[0])
         arcade.draw_line(x1, y1, x2, y2, arcade.color.WHITE, 2)
 
-        # Draw cars
+        # -----------------------
+        # Draw Cars (SMOOTH)
+        # -----------------------
         for drv, data in driver_data.items():
-
-            # base index (must be int)
             base = int(self.frame + data["offset"]) % len(data["X"])
             next_idx = (base + 1) % len(data["X"])
+            t = self.frame % 1
 
-            # interpolation factor (decimal part)
-            t = (self.frame % 1)
-
-            # interpolate between two points
             x = (1 - t) * data["X"][base] + t * data["X"][next_idx]
             y = (1 - t) * data["Y"][base] + t * data["Y"][next_idx]
 
             cx, cy = normalize(x, y)
+            arcade.draw_circle_filled(cx, cy, 8, data["color"])
 
-            arcade.draw_circle_filled(cx, cy, 10, data["color"])
-        
+        # -----------------------
+        # HUD (TOP LEFT)
+        # -----------------------
+        status = "PAUSED" if self.paused else "PLAYING"
+        arcade.draw_text(f"Status: {status}", 20, 860, arcade.color.WHITE, 14)
+        arcade.draw_text(f"Speed: {self.speed:.1f}x", 20, 830, arcade.color.WHITE, 14)
+        arcade.draw_text(f"Frame: {int(self.frame)}", 20, 800, arcade.color.WHITE, 14)
+
+        arcade.draw_text("Controls:", 20, 750, arcade.color.YELLOW, 14)
+        arcade.draw_text("SPACE = Pause/Play", 20, 720, arcade.color.WHITE, 12)
+        arcade.draw_text("← → = Step frame", 20, 700, arcade.color.WHITE, 12)
+        arcade.draw_text("↑ ↓ = Speed", 20, 680, arcade.color.WHITE, 12)
+        arcade.draw_text("R = Restart", 20, 660, arcade.color.WHITE, 12)
+
+    # -----------------------
+    # Update Loop
+    # -----------------------
     def on_update(self, delta_time):
-        self.frame += 0.2   
+        if not self.paused:
+            self.frame += 0.2 * self.speed
 
-        #  FORCE SCREEN REFRESH
-        self.on_draw()
+    # -----------------------
+    # Controls
+    # -----------------------
+    def on_key_press(self, key, modifiers):
+
+        # Pause / Play
+        if key == arcade.key.SPACE:
+            self.paused = not self.paused
+
+        # Restart
+        elif key == arcade.key.R:
+            self.frame = 0
+
+        # Speed control
+        elif key == arcade.key.UP:
+            self.speed = min(self.speed + 0.5, 5)
+
+        elif key == arcade.key.DOWN:
+            self.speed = max(self.speed - 0.5, 0.1)
+
+        # Frame step (only when paused)
+        elif key == arcade.key.RIGHT:
+            if self.paused:
+                self.frame += 1
+
+        elif key == arcade.key.LEFT:
+            if self.paused:
+                self.frame -= 1
 
 
 # -------------------------------
