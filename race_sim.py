@@ -12,12 +12,21 @@ fastf1.Cache.enable_cache("cache")
 print("Loading session...")
 session = fastf1.get_session(2024, "Monaco", "R")
 session.load()
+driver_map = {}
+
+for drv in session.drivers:
+    try:
+        info = session.get_driver(drv)
+        driver_map[drv] = info["Abbreviation"]  
+    except:
+        driver_map[drv] = drv
+
 print("✅ Session loaded!")
 
 # -------------------------------
 # Load Drivers
 # -------------------------------
-drivers = session.drivers[:5]
+drivers = session.drivers[:20]
 
 driver_data = {}
 
@@ -53,8 +62,8 @@ min_x, max_x = min(X), max(X)
 min_y, max_y = min(Y), max(Y)
 
 def normalize(x, y):
-    x = (x - min_x) / (max_x - min_x) * 700 + 50
-    y = (y - min_y) / (max_y - min_y) * 700 + 50
+    x = (x - min_x) / (max_x - min_x) * 600 + 100
+    y = (y - min_y) / (max_y - min_y) * 700 + 100
     return x, y
 
 
@@ -63,7 +72,7 @@ def normalize(x, y):
 # -------------------------------
 class F1Replay(arcade.Window):
     def __init__(self):
-        super().__init__(900, 900, "F1 Replay System 🏎️")
+        super().__init__(1400, 900, "F1 Replay System 🏎️")
         arcade.set_background_color(arcade.color.BLACK)
 
         self.frame = 0.0
@@ -72,6 +81,18 @@ class F1Replay(arcade.Window):
 
     def on_draw(self):
         self.clear()
+
+        # -----------------------
+        # Build Leaderboard 
+        # -----------------------
+        leaderboard = []
+
+        for drv, data in driver_data.items():
+            base = int(self.frame + data["offset"]) % len(data["X"])
+            leaderboard.append((drv, base))
+
+        # Sort by progress (descending)
+        leaderboard.sort(key=lambda x: x[1], reverse=True)
 
         # -----------------------
         # Draw Track
@@ -119,6 +140,19 @@ class F1Replay(arcade.Window):
         arcade.draw_text("← → = Step frame", 20, 700, arcade.color.WHITE, 12)
         arcade.draw_text("↑ ↓ = Speed", 20, 680, arcade.color.WHITE, 12)
         arcade.draw_text("R = Restart", 20, 660, arcade.color.WHITE, 12)
+
+        # -----------------------
+        # LEADERBOARD (RIGHT SIDE)
+        # -----------------------
+        start_x = 1050  
+        start_y = 850
+
+        arcade.draw_text("LEADERBOARD", start_x, start_y, arcade.color.YELLOW, 16)
+
+        for i, (drv, prog) in enumerate(leaderboard[:20]):
+            name = driver_map.get(drv, drv)
+            text = f"{i+1}. {name}"
+            arcade.draw_text(text, start_x, start_y - 35*(i+1), arcade.color.WHITE, 14)
 
     # -----------------------
     # Update Loop

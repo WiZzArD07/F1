@@ -110,12 +110,12 @@ python race_sim.py
 | Day 1 | Data loading & telemetry extraction |
 | Day 2 | Track rendering                     |
 | Day 3 | Multi-driver smooth animation       |
+| Day 4 | Playback controls                   |
 
 ---
 
 ## Upcoming Features
 
--  Playback controls (pause, speed, frame control)
 -  Live leaderboard (position + tyre compounds)
 -  Driver telemetry panel (speed, gear, DRS)
 -  Weather system integration
