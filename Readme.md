@@ -111,7 +111,7 @@ python race_sim.py
 | Day 2 | Track rendering                               |
 | Day 3 | Multi-driver smooth animation                 |
 | Day 4 | Playback controls                             |
-| Day 4 | Live leaderboard (position + tyre compounds)  |
+| Day 5 | Live leaderboard (position + tyre compounds)  |
 
 ---
 
