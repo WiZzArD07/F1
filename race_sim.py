@@ -21,7 +21,36 @@ for drv in session.drivers:
     except:
         driver_map[drv] = drv
 
-print("✅ Session loaded!")
+print(" Session loaded!")
+
+# -------------------------------
+# Team Colors
+# -------------------------------
+TEAM_COLORS = {
+    "VER": arcade.color.DARK_BLUE,
+    "PER": arcade.color.DARK_BLUE,
+    "HAM": arcade.color.SILVER,
+    "RUS": arcade.color.SILVER,
+    "LEC": arcade.color.RED,
+    "SAI": arcade.color.RED,
+    "NOR": arcade.color.ORANGE,
+    "PIA": arcade.color.ORANGE,
+    "ALO": arcade.color.GREEN,
+    "STR": arcade.color.GREEN,
+    "GAS": arcade.color.BLUE,
+    "OCO": arcade.color.BLUE,
+}
+
+# -------------------------------
+# Tyres
+# -------------------------------
+TYRES = ["SOFT", "MEDIUM", "HARD"]
+
+TYRE_COLORS = {
+    "SOFT": arcade.color.RED,
+    "MEDIUM": arcade.color.YELLOW,
+    "HARD": arcade.color.WHITE
+}
 
 # -------------------------------
 # Load Drivers
@@ -36,14 +65,12 @@ for drv in drivers:
         fastest = laps.pick_fastest()
         tel = fastest.get_telemetry()
 
+        code = driver_map.get(drv, drv)
         driver_data[drv] = {
             "X": tel['X'].values[::5],
             "Y": tel['Y'].values[::5],
-            "color": (
-                random.randint(100, 255),
-                random.randint(100, 255),
-                random.randint(100, 255)
-            ),
+            "color": TEAM_COLORS.get(code, arcade.color.WHITE),
+            "compound": random.choice(TYRES),
             "offset": random.randint(0, 200)
         }
     except:
@@ -151,8 +178,30 @@ class F1Replay(arcade.Window):
 
         for i, (drv, prog) in enumerate(leaderboard[:20]):
             name = driver_map.get(drv, drv)
+            data = driver_data[drv]
+
+            compound = data["compound"]
+            tyre_color = TYRE_COLORS[compound]
+
             text = f"{i+1}. {name}"
-            arcade.draw_text(text, start_x, start_y - 35*(i+1), arcade.color.WHITE, 14)
+
+            # Driver name (team color)
+            arcade.draw_text(
+            text,
+            start_x,
+            start_y - 35*(i+1),
+            data["color"],
+            14
+    )
+
+            # Tyre next to name
+            arcade.draw_text(
+                compound,
+                start_x + 90,
+                start_y - 35*(i+1),
+                tyre_color,
+                12
+    )
 
     # -----------------------
     # Update Loop

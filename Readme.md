@@ -105,18 +105,18 @@ python race_sim.py
 
 ## Current Progress
 
-| Day   | Progress                            |
-| ----- | ----------------------------------- |
-| Day 1 | Data loading & telemetry extraction |
-| Day 2 | Track rendering                     |
-| Day 3 | Multi-driver smooth animation       |
-| Day 4 | Playback controls                   |
+| Day   | Progress                                      |
+| ----- | ----------------------------------------------|
+| Day 1 | Data loading & telemetry extraction           |
+| Day 2 | Track rendering                               |
+| Day 3 | Multi-driver smooth animation                 |
+| Day 4 | Playback controls                             |
+| Day 4 | Live leaderboard (position + tyre compounds)  |
 
 ---
 
 ## Upcoming Features
 
--  Live leaderboard (position + tyre compounds)
 -  Driver telemetry panel (speed, gear, DRS)
 -  Weather system integration
 -  Race flags (yellow, safety car, red flag)
